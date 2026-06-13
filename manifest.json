@@ -1,6 +1,6 @@
 {
-  "name": "ATrust Wallet",
-  "short_name": "ATrust",
+  "name": "Trust Wallet",
+  "short_name": "Trust",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#1b1b1d",
