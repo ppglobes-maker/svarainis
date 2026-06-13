@@ -23,7 +23,7 @@ const displayChainSelectText = document.getElementById("displayChainSelectText")
 const accentInput = document.getElementById("accentInput");
 const chainBalanceInputs = document.getElementById("chainBalanceInputs");
 const priceInput = document.getElementById("priceInput");
-const addressInput = document.getElementById("addressInput");
+const chainAddressInputs = document.getElementById("chainAddressInputs");
 const themeToggle = document.getElementById("themeToggle");
 const themeInSettings = document.getElementById("themeInSettings");
 const sendButton = document.getElementById("sendButton");
@@ -120,6 +120,20 @@ function getChainBalances(sourceWallet = wallet) {
   }
 
   return balances;
+}
+
+function getChainAddresses(sourceWallet = wallet) {
+  const source =
+    sourceWallet?.chainAddresses && typeof sourceWallet.chainAddresses === "object"
+      ? sourceWallet.chainAddresses
+      : {};
+
+  return Object.fromEntries(
+    usdtChains.map((chain) => [
+      chain.key,
+      String(source[chain.key] || (chain.key === "TRX" ? sourceWallet?.address || "" : "")).trim(),
+    ]),
+  );
 }
 
 function getTotalBalance(chainBalances) {
@@ -277,7 +291,21 @@ function render(syncForm = true) {
     )
     .join("");
   priceInput.value = String(usdPrice);
-  addressInput.value = wallet.address || "";
+  const chainAddresses = getChainAddresses(wallet);
+  chainAddressInputs.innerHTML = usdtChains
+    .map(
+      (chain) => `
+        <label class="settings-address-row">
+          ${renderChainIcon(chain)}
+          <span>
+            <strong>${chain.title}</strong>
+            <small>${chain.network}</small>
+          </span>
+          <input data-chain-address="${chain.key}" value="${chainAddresses[chain.key] || ""}" autocomplete="off" spellcheck="false" />
+        </label>
+      `,
+    )
+    .join("");
 }
 
 function apiUrl(path) {
@@ -393,6 +421,10 @@ settingsForm.addEventListener("input", () => {
   chainBalanceInputs.querySelectorAll("[data-chain-balance]").forEach((input) => {
     chainBalances[input.dataset.chainBalance] = Number(input.value) || 0;
   });
+  const chainAddresses = getChainAddresses(wallet);
+  chainAddressInputs.querySelectorAll("[data-chain-address]").forEach((input) => {
+    chainAddresses[input.dataset.chainAddress] = input.value.trim();
+  });
 
   wallet = {
     ...wallet,
@@ -402,7 +434,8 @@ settingsForm.addEventListener("input", () => {
     chainBalances,
     balance: getTotalBalance(chainBalances),
     usdPrice: Number(priceInput.value) || 0,
-    address: addressInput.value.trim(),
+    chainAddresses,
+    address: chainAddresses.TRX || wallet.address || "",
   };
   render(false);
 });
@@ -413,13 +446,15 @@ settingsForm.addEventListener("submit", (event) => {
 
 settingsForm.addEventListener("change", () => {
   const chainBalances = getChainBalances(wallet);
+  const chainAddresses = getChainAddresses(wallet);
   saveWallet({
     displayName: displayNameInput.value.trim() || "USDT Tron",
     displayChain: displayChainInput.value,
     accentTheme: accentInput.value,
     chainBalances,
     usdPrice: Number(priceInput.value) || 0,
-    address: addressInput.value.trim(),
+    chainAddresses,
+    address: chainAddresses.TRX || "",
   }).catch(() => showToast("Save failed"));
 });
 
@@ -473,6 +508,7 @@ sendForm.addEventListener("submit", async (event) => {
       chain: sendChain.value,
       toAddress,
       amount,
+      fromAddress: getChainAddresses(wallet)[sendChain.value] || "",
     });
     sendStatus.textContent = `${formatAmount(transfer.amount, 4)} USDT sent`;
     transferHistory.unshift({
@@ -519,6 +555,14 @@ loadWallet().catch(() => {
       SOL: 0,
       ARB: 0,
       BASE: 0,
+    },
+    chainAddresses: {
+      TRX: "TQ9fX7p2xVZ7dUEUuW8o3rhTRC20DemoWallet9",
+      ETH: "0xe24690000000000000000000000000006c81935",
+      BNB: "0xe24690000000000000000000000000006c81935",
+      SOL: "Hjodm6QTrustWalletDemoSolanaAddresssS8zTLH",
+      ARB: "0xe24690000000000000000000000000006c81935",
+      BASE: "0xe24690000000000000000000000000006c81935",
     },
     usdPrice: 1,
     address: "TQ9fX7p2xVZ7dUEUuW8o3rhTRC20DemoWallet9",

@@ -999,7 +999,8 @@ h1 {
 
 .settings-panel label,
 .send-panel label,
-.settings-chain-balances {
+.settings-chain-balances,
+.settings-chain-addresses {
   display: block;
   margin-top: 15px;
 }
@@ -1007,7 +1008,8 @@ h1 {
 .settings-panel label span,
 .send-panel label span,
 .settings-panel__theme span,
-.settings-chain-balances > span {
+.settings-chain-balances > span,
+.settings-chain-addresses > span {
   display: block;
   margin-bottom: 7px;
   color: var(--muted);
@@ -1237,7 +1239,8 @@ h1 {
   margin-top: 16px;
 }
 
-.settings-chain-balances > div {
+.settings-chain-balances > div,
+.settings-chain-addresses > div {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1289,6 +1292,54 @@ h1 {
   height: 38px;
   padding: 0 10px;
   text-align: right;
+}
+
+.settings-address-row {
+  margin-top: 0 !important;
+  padding: 8px;
+  border-radius: 18px;
+  background: var(--card-soft);
+  border: 1px solid var(--line);
+  display: grid !important;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+}
+
+.settings-address-row .chain-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.settings-address-row .chain-icon__badge {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+}
+
+.settings-address-row strong,
+.settings-address-row small {
+  display: block;
+}
+
+.settings-address-row strong {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.1;
+}
+
+.settings-address-row small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.settings-address-row input {
+  grid-column: 1 / -1;
+  height: 38px;
+  padding: 0 10px;
+  font-size: 12px;
 }
 
 .settings-panel__theme span {
