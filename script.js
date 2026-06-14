@@ -1001,7 +1001,7 @@ function renderAssets() {
       const amount = balances[coinKey] || 0;
       const value = amount * price;
       const changeClass = roundedChange < 0 ? "is-loss" : roundedChange > 0 ? "is-gain" : "is-neutral";
-      const changePrefix = roundedChange > 0 ? "+" : "";
+      const changePrefix = roundedChange > 0 ? "+" : roundedChange === 0 ? "-" : "";
 
       return `
         <button class="asset-row" data-name="${coin.symbol.toLowerCase()} ${coin.name.toLowerCase()}" data-action="${coinKey.toLowerCase()}">
