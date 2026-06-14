@@ -1362,10 +1362,6 @@ async function fetchLatestWalletData() {
   if (balanceResult.status === "fulfilled" && balanceResult.value) {
     applyBalances(balanceResult.value);
   }
-  if (claimResult.status === "fulfilled" && claimResult.value > 0) {
-    showToast(`Received ${formatCryptoAmount(claimResult.value)} USDT`);
-  }
-
   renderAssets();
   if (settingsSheet?.classList.contains("is-open")) {
     renderSettings();
