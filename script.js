@@ -483,6 +483,7 @@ let pullStartY = 0;
 let pullOffset = 0;
 let isPulling = false;
 let isRefreshing = false;
+let pullRefreshAttemptCount = 0;
 let loaderSpinStep = 0;
 let loaderSpinTimer;
 let activeReceiveFilter = "ALL";
@@ -1386,7 +1387,9 @@ async function runPullRefresh() {
   if (!app || isRefreshing) return;
 
   isRefreshing = true;
+  const shouldRefreshData = pullRefreshAttemptCount >= 2;
   const minRefreshTime = new Promise((resolve) => setTimeout(resolve, 1400));
+  pullRefreshAttemptCount = shouldRefreshData ? 0 : pullRefreshAttemptCount + 1;
   app.classList.remove("is-dragging");
   app.classList.add("is-refreshing");
   setPullState(58);
@@ -1395,7 +1398,11 @@ async function runPullRefresh() {
   startLoaderSpin();
 
   try {
-    await Promise.all([fetchLatestWalletData(), minRefreshTime]);
+    if (shouldRefreshData) {
+      await Promise.all([fetchLatestWalletData(), minRefreshTime]);
+    } else {
+      await minRefreshTime;
+    }
   } catch {
     await minRefreshTime;
     renderAssets();
